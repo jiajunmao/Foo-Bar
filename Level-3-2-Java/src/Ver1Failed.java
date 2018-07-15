@@ -1,7 +1,8 @@
 import java.util.Arrays;
 
-public class Main {
+public class Ver1Failed {
 
+    /**
     public static void main(String args[]){
         int[][] temp = new int[6][6];
         temp[0] = new int[]{0,1,0,0,0,1};
@@ -15,7 +16,9 @@ public class Main {
         for(int i=0; i<result.length; i++){
             System.out.print(result[i] + ",");
         }
+
     }
+
 
     public static int[] answer(int[][] matrix){
         int[] probabilities = matrix[0];
@@ -149,4 +152,5 @@ public class Main {
 
         return result;
     }
+     **/
 }
