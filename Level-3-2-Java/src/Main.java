@@ -3,14 +3,25 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String args[]){
+        int[][] temp = new int[6][6];
+        temp[0] = new int[]{0,1,0,0,0,1};
+        temp[1] = new int[]{4,0,0,3,2,0};
+        temp[2] = new int[]{0,0,0,0,0,0};
+        temp[3] = new int[]{0,0,0,0,0,0};
+        temp[4] = new int[]{0,0,0,0,0,0};
+        temp[5] = new int[]{0,0,0,0,0,0};
 
+        int[] result = answer(temp);
+        for(int i=0; i<result.length; i++){
+            System.out.print(result[i] + ",");
+        }
     }
 
-    public static void answer(int[][] matrix){
-        int[] probabilities = new int[matrix[0].length];
-        int denominator = 0;
+    public static int[] answer(int[][] matrix){
+        int[] probabilities = matrix[0];
+        int denominator = 1;
 
-
+        return recursiveCalculate(matrix, probabilities, denominator, 0);
     }
 
     public static int[] recursiveCalculate(int[][] matrix, int[] probabilities, int denominator, int rowNum){
@@ -29,8 +40,9 @@ public class Main {
             int scalePrevious = denominator;
             denominator *= scaleCurrent;
 
-            probabilities = scaleArray(probabilities, scaleCurrent);
-            probabilities = elementWiseCombine(probabilities, scaleArray(matrix[rowNum], scalePrevious));
+            probabilities = scaleArray(probabilities, scaleCurrent, "up");
+            probabilities = elementWiseCombine(probabilities,
+                    scaleArray(matrix[rowNum], scalePrevious, "up"));
 
             int[] result = new int[matrix[0].length+1];
             for(int i=0; i<matrix[rowNum].length; i++){
@@ -47,6 +59,13 @@ public class Main {
             }
 
             // Eliminating zero probability from the result
+            result = eliminateZeros(result);
+
+            // Scale the array down
+            int divisor = getCommonDivisor(result, result.length);
+            result = scaleArray(result, divisor, "down");
+
+            return result;
         }
     }
 
@@ -96,11 +115,19 @@ public class Main {
         return commonDivisor(b%a, a);
     }
 
-    public static int[] scaleArray(int[] array, int scale){
-        for(int i=0; i<array.length; i++){
-            array[i] *= scale;
+    public static int[] scaleArray(int[] array, int scale, String operation){
+        if(operation.equals("down")) {
+            for (int i = 0; i < array.length; i++) {
+                array[i] *= scale;
+            }
+            return array;
         }
-        return array;
+        else{
+            for (int i = 0; i < array.length; i++) {
+                array[i] /= scale;
+            }
+            return array;
+        }
     }
 
     public static int[] elementWiseCombine(int[] arrayA, int[] arrayB){
@@ -113,8 +140,8 @@ public class Main {
     }
 
     public static int[] elemwiseCombWithCommonDenom(int[] arrayA, int[] arrayB){
-        arrayA = scaleArray(arrayA, arrayB[arrayB.length-1]);
-        arrayB = scaleArray(arrayB, arrayA[arrayA.length-1]);
+        arrayA = scaleArray(arrayA, arrayB[arrayB.length-1], "up");
+        arrayB = scaleArray(arrayB, arrayA[arrayA.length-1], "up");
 
         int[] result = new int[arrayA.length];
         result = elementWiseCombine(arrayA, arrayB);
